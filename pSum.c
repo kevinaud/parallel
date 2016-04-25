@@ -8,7 +8,23 @@
 #include <fcntl.h>
 #include <stdio.h>
 
-#include "functions.h"
+char* stringCopy(char* source)
+{
+	char* dest;
+	int sourceLen;
+	sourceLen = stringLength(source);
+
+	dest = malloc(sizeof(char) * (sourceLen + 1));
+
+	int i;
+	for(i = 0; i < sourceLen; i++)
+	{
+		dest[i] = source[i];
+	}
+	dest[sourceLen] = '\0';
+
+	return dest;
+}
 
 int processing_function(int fhandle){
 	int sum;

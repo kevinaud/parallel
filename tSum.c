@@ -11,6 +11,24 @@
 
 static sem_t lock;
 
+char* stringCopy(char* source)
+{
+	char* dest;
+	int sourceLen;
+	sourceLen = stringLength(source);
+
+	dest = malloc(sizeof(char) * (sourceLen + 1));
+
+	int i;
+	for(i = 0; i < sourceLen; i++)
+	{
+		dest[i] = source[i];
+	}
+	dest[sourceLen] = '\0';
+
+	return dest;
+}
+
 void *thread_function(void *params){
 	int buffer[1];
 
