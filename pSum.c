@@ -8,6 +8,22 @@
 #include <fcntl.h>
 #include <stdio.h>
 
+int stringLength(char* source)
+{
+	char c;
+	int len;
+	len = 0;
+	c = source[0];
+
+	while(c != '\0')
+	{
+		len++;
+		c = source[len];
+	}
+
+	return len;
+}
+
 char* stringCopy(char* source)
 {
 	char* dest;
@@ -84,6 +100,7 @@ int main(int argc, char* argv[]){
 		}
 	}
 
+	free(pids);
 	int status;
 
 	for(i = 0; i < numProcesses; i++){

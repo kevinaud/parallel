@@ -5,11 +5,25 @@
 #include <pthread.h>
 #include <semaphore.h>
 #include <fcntl.h>
-
 #include <stdio.h>
-#include "functions.h"
 
 static sem_t lock;
+
+int stringLength(char* source)
+{
+	char c;
+	int len;
+	len = 0;
+	c = source[0];
+
+	while(c != '\0')
+	{
+		len++;
+		c = source[len];
+	}
+
+	return len;
+}
 
 char* stringCopy(char* source)
 {
@@ -90,7 +104,13 @@ int main(int argc, char* argv[]){
 			exit(1);
 		}
 	}
-	
+
+	free(params[0]);	
+	free(params[1]);	
+	free(params);	
+
+	free(thread_ids);
+
 	for(i = 0; i < numThreads; i++){
 		pthread_join(thread_ids[i], NULL);			
 	}
@@ -99,4 +119,14 @@ int main(int argc, char* argv[]){
 
 	return 0;
 }
+
+
+
+
+
+
+
+
+
+
 
