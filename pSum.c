@@ -1,3 +1,13 @@
+/******************************************************************************
+ * Filename: pSum.c
+ * Author Kevin Aud
+ * Description:
+ * 		Uses child processes to sum the integers in a binary file. 
+ *
+ * Dates Modified:
+ * 		04/24/2016 - File created
+ *****************************************************************************/
+
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -8,6 +18,16 @@
 #include <fcntl.h>
 #include <stdio.h>
 
+/*******************************************************************************
+ * Name:			stringLength
+ * Description:		determines the length of a character array
+ *
+ * Input:
+ * 		char*		character array to determine the length of 
+ *
+ * Output:
+ * 		return		length of array
+ ******************************************************************************/
 int stringLength(char* source)
 {
 	char c;
@@ -24,6 +44,16 @@ int stringLength(char* source)
 	return len;
 }
 
+/*******************************************************************************
+ * Name:			stringCopy
+ * Description:		returns pointer to copy of array
+ *
+ * Input:
+ * 		char*		string to copy 
+ *
+ * Output:
+ * 		char*		copy of string
+ ******************************************************************************/
 char* stringCopy(char* source)
 {
 	char* dest;
@@ -42,6 +72,17 @@ char* stringCopy(char* source)
 	return dest;
 }
 
+/*******************************************************************************
+ * Name:			processing_function
+ * Description:		sums up the integers in a  binary array file using a thread
+ *
+ * Input:
+ * 		fhandle		File handle to a previously opened binary file
+ *
+ * Output:
+ * 		return		the sum of the part of the array that was processed by this 
+ * 					thread
+ ******************************************************************************/
 int processing_function(int fhandle){
 	int sum;
 	sum = 0;

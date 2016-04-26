@@ -1,4 +1,15 @@
+/******************************************************************************
+ * Filename: tSum.c
+ * Author Kevin Aud
+ * Description:
+ * 		Uses threads to sum the integers in a binary file. 
+ *
+ * Dates Modified:
+ * 		04/24/2016 - File created
+ *****************************************************************************/
+
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 #include <sys/stat.h>
@@ -9,6 +20,16 @@
 
 static sem_t lock;
 
+/*******************************************************************************
+ * Name:			stringLength
+ * Description:		determines the length of a character array
+ *
+ * Input:
+ * 		char*		character array to determine the length of 
+ *
+ * Output:
+ * 		return		length of array
+ ******************************************************************************/
 int stringLength(char* source)
 {
 	char c;
@@ -25,6 +46,16 @@ int stringLength(char* source)
 	return len;
 }
 
+/*******************************************************************************
+ * Name:			stringCopy
+ * Description:		returns pointer to copy of array
+ *
+ * Input:
+ * 		char*		string to copy 
+ *
+ * Output:
+ * 		char*		copy of string
+ ******************************************************************************/
 char* stringCopy(char* source)
 {
 	char* dest;
@@ -43,6 +74,16 @@ char* stringCopy(char* source)
 	return dest;
 }
 
+/*******************************************************************************
+ * Name:			thread_function
+ * Description:		sums up the integers in a binary array file using a child process
+ *
+ * Input:
+ * 		params		array of params to run the function
+ *
+ * Output:
+ * 		void
+ ******************************************************************************/
 void *thread_function(void *params){
 	int buffer[1];
 
@@ -94,6 +135,7 @@ int main(int argc, char* argv[]){
 	params[0] = &fhandle;
 	params[1] = &sum;
 
+
 	sem_init(&lock, 0, 1);
 
 	int success;
@@ -105,15 +147,12 @@ int main(int argc, char* argv[]){
 		}
 	}
 
-	free(params[0]);	
-	free(params[1]);	
-	free(params);	
-
-	free(thread_ids);
-
 	for(i = 0; i < numThreads; i++){
 		pthread_join(thread_ids[i], NULL);			
 	}
+
+	free(params);	
+	free(thread_ids);
 
 	printf("Sum: %i\n", sum);
 
