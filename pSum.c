@@ -9,6 +9,7 @@
  *****************************************************************************/
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 #include <sys/stat.h>
@@ -83,20 +84,42 @@ char* stringCopy(char* source)
  * 		return		the sum of the part of the array that was processed by this 
  * 					thread
  ******************************************************************************/
-int processing_function(int fhandle){
-	int sum;
-	sum = 0;
+int processing_function(int fhandle, int sumfhandle){
+	
+	struct flock myLock;
 
+	myLock.l_type = F_WRLCK; 
+	myLock.l_whence = SEEK_SET;
+	myLock.l_start = 0;
+	myLock.l_len = 1;
+
+	int atEnd;
+	atEnd = 0;
+
+	int sum[1];
 	int buffer[1];
-	while(read(fhandle, buffer, sizeof(int)) != 0){
+	while(atEnd == 0){
 		flock(fhandle, LOCK_EX);
 
-		sum += buffer[0];
+		if(read(fhandle, buffer, sizeof(int)) == 0){
+			atEnd = 1; 	
+		}
+		else {
+			/* Get current sum */
+			read(sumfhandle, sum, sizeof(int));
 
+			/* Add to current sum */
+			sum[0] += buffer[0];
+
+			/* Overwrite current sum */
+			write(sumfhandle, sum, sizeof(int));
+		}
+		
 		flock(fhandle, LOCK_UN);
 	}	
 
-	return sum;	
+	read(sumfhandle, sum, sizeof(int));
+	return sum[0];	
 }
 
 int main(int argc, char* argv[]){
@@ -114,6 +137,10 @@ int main(int argc, char* argv[]){
 	numProcessStr = stringCopy(argv[2]);
 	numProcesses = atoi(numProcessStr);
 	free(numProcessStr);
+
+	int sumfhandle;
+
+	sumfhandle = open("tempSumFile.bin", O_CREAT, 664);
 
 	int	fhandle;
 
@@ -136,7 +163,9 @@ int main(int argc, char* argv[]){
 		pids[i] = fork();
 
 		if(pids[i] == 0){
-			sum += processing_function(fhandle);		
+			sum += processing_function(fhandle, sumfhandle);		
+			close(fhandle);
+			close(sumfhandle);
 			return sum;
 		}
 	}
@@ -150,6 +179,8 @@ int main(int argc, char* argv[]){
 	}
 
 	printf("Sum: %i\n", sum);	
+
+	remove("tempSumFile.bin");
 
 	return 0;
 }
